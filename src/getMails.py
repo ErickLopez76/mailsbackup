@@ -44,3 +44,7 @@ print (email.utils.parseaddr(email_message['From']))
 print('cc: ')
 print(email_message['cc'])
 print (email_message.items()) #print all headers
+
+f=open(str(int(lastest_email_id)) + ".eml","w")
+f.write(str(raw_email))
+f.close()
