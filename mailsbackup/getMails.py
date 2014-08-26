@@ -1,7 +1,7 @@
 __author__ = 'ErickLopez76'
 import imaplib
 import email
-from mailsBackupTools import *
+from mailsbackuptools import *
 
 imap_host = 'mail.inclusionsocial.gob.sv'
 imap_user = 'elopez@inclusionsocial.gob.sv'
@@ -22,19 +22,28 @@ print(folderStatus)
 result, data = imap.uid('search', None, "ALL")
 
 ids = data[0] #data is a list.
+print('print ids')
 print(ids)
 id_list = ids.split() #ids is a space separate string
 lastest_email_id = data[0].split()[-1] # get the lastest
 
 #result, data = imap.fetch(lastest_email_id,"(RFC822)")  #fetch the mail
 
+
+print(lastest_email_id)
 result, data = imap.uid('fetch', lastest_email_id, '(RFC822)')
+#result, data = imap.uid('fetch', lastest_email_id, '(X-GM-THRID X-GM-MSGID)')
+
+status, AllMessage = imap.fetch('1','(RFC822)')
 
 raw_email = data[0][1]
 
+#raw_email = data
+
+#fetch mail
+
 print(raw_email)
-print (lastest_email_id)
-print(sumar(1,1))
+print (str(lastest_email_id))
 
 email_message = email.message_from_bytes(raw_email)
 print('To: ')
@@ -45,6 +54,8 @@ print('cc: ')
 print(email_message['cc'])
 print (email_message.items()) #print all headers
 
+
 f=open(str(int(lastest_email_id)) + ".eml","w")
-f.write(str(raw_email))
+#f.write(str(raw_email))
+f.write(str(email_message))
 f.close()
