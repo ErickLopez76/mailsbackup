@@ -32,12 +32,21 @@ def getmaillist(imap_server,user,passw, folder, filter):
 
     imap.select("inbox") #Connected to inbox
 
-    print(folderStatus)
-
     result, data = imap.uid('search', None, "ALL")
 
-    return data[0] #data is a list.
 
+    return convert_listmail_to_array(str(data[0])) #data is a list.
+
+def convert_listmail_to_array(list):
+    stonum = ''
+    result_list = []
+    for s in list:
+        if s.isnumeric():
+            stonum += s
+        if s.isspace() and len(stonum) > 0:
+            result_list.append(int(stonum))
+            stonum = ''
+    return result_list
 
 def sumar(a,b):
     """
