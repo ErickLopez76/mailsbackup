@@ -1,6 +1,7 @@
 __author__ = 'ErickLopez76'
 import imaplib
 import email
+import datetime
 from mailsbackuptools import *
 
 imap_host = 'mail.inclusionsocial.gob.sv'
@@ -55,10 +56,14 @@ print('From: ')
 print (email.utils.parseaddr(email_message['From']))
 print('cc: ')
 print(email_message['cc'])
+print(email_message['subject'])
+print(email_message['date'])
 print (email_message.items()) #print all headers
+
 
 
 f=open(str(int(lastest_email_id)) + ".eml","w")
 #f.write(str(raw_email))
 f.write(str(email_message))
+print(f.tell())
 f.close()

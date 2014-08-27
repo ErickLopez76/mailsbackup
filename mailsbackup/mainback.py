@@ -1,5 +1,6 @@
 __author__ = 'earch'
 import mailsbackuptools
+import datetime
 
 maillist = []
 m = []
@@ -13,12 +14,12 @@ maillist = mailsbackuptools.getmaillist(mailServer, mailUser, mailPassword, 'INB
 for idmail in maillist:
     #print(int(idmail))
     if not mailsbackuptools.search_mailid_db(int(idmail)): #No lo encuentra
-        print('No Encontrado') #Save in hard disk drive and add to db_local
+        #print('No Encontrado') #Save in hard disk drive and add to db_local
         #get_save_mail_eml
-        mailsbackuptools.getmail_save_eml(idmail)
-
-    else:
-        print('Encontrado') #continue with next id
+        vto, vfrom, vcc, vsubject, vstrdate, vsize = mailsbackuptools.getmail_save_eml(idmail)
+        mailsbackuptools.put_newmail_dblocal(int(idmail),vsize, vto,vfrom , vcc , vsubject ,datetime.datetime.now(),vstrdate)
+    #else:
+     #   print('Encontrado') #continue with next id
 
 print(maillist)
 

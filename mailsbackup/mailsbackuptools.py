@@ -30,6 +30,15 @@ def getdbcnxdata():
     dbpassword = config.get('DB_local', 'dbPassword')
     return filedb, dbuser, dbpassword
 
+def put_newmail_dblocal(mail_id, size, pfrom, pto, pcc, subject, pdate, pstrdate):
+    cnx = dblocal_conexion()
+    sql_parameter = mail_id, size, pfrom, pto, pcc, subject, pdate, pstrdate
+    assert isinstance(cnx, fdb.Connection)
+    cur = cnx.cursor()
+    cur.callproc("ADD_MAIL", (sql_parameter))
+    cnx.commit()
+
+
 
 def getmaildata():
     """
@@ -58,8 +67,9 @@ def getmail_save_eml(mailid):
     email_message = email.message_from_bytes(raw_mail)
     f=open(str(int(mailid)) + ".eml", "w")
     f.write(str(email_message))
+    size = f.tell()
     f.close()
-    return
+    return email_message['To'], email_message['From'], email_message['cc'], email_message['subject'], email_message['date'], size
 
 
 def getimap(imap_server=None, user=None, passw=None, folder = None, filter = None):
