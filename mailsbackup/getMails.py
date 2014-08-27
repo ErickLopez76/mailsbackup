@@ -31,7 +31,10 @@ lastest_email_id = data[0].split()[-1] # get the lastest
 
 
 print(lastest_email_id)
+
 result, data = imap.uid('fetch', lastest_email_id, '(RFC822)')
+print("-------------")
+print(type(lastest_email_id))
 #result, data = imap.uid('fetch', lastest_email_id, '(X-GM-THRID X-GM-MSGID)')
 
 status, AllMessage = imap.fetch('1','(RFC822)')
