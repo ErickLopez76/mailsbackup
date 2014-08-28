@@ -15,9 +15,8 @@ for idmail in maillist:
     #print(int(idmail))
     if not mailsbackuptools.search_mailid_db(int(idmail)): #No lo encuentra
         #print('No Encontrado') #Save in hard disk drive and add to db_local
-        #get_save_mail_eml
-        vto, vfrom, vcc, vsubject, vstrdate, vsize = mailsbackuptools.getmail_save_eml(idmail)
-        mailsbackuptools.put_newmail_dblocal(int(idmail),vsize, vto,vfrom , vcc , vsubject ,datetime.datetime.now(),vstrdate)
+        vfrom, vto, vcc, vsubject, vstrdate, vsize = mailsbackuptools.getmail_save_eml(idmail) #Save mail like eml
+        mailsbackuptools.put_newmail_dblocal(int(idmail),vsize, vfrom, vto , vcc , vsubject ,datetime.datetime.now(),vstrdate) #Save in db_local
     #else:
      #   print('Encontrado') #continue with next id
 
