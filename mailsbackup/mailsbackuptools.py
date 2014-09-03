@@ -2,8 +2,11 @@ __author__ = 'ErickLopez76'
 import email
 import imaplib
 import configparser
+import mysql
 import mysql.connector
 import fdb  # firebird library
+import socket
+import ipaddress
 
 def dbservercnxdata():
     config = configparser.ConfigParser()
@@ -13,19 +16,48 @@ def dbservercnxdata():
     dbpassword = config.get('DB_server', 'dbsPassword')
     return host, dbuser, dbpassword
 
-cnx = mysql.connector.connect(user='backmail_admin', password='bkAdmin*5',
-                              host='10.20.30.82',
-                              database='mail_backup_server')
-#assert isinstance(cnx, mysql.Connection)
-cur = cnx.cursor()
-#assert isinstance(cur, mysql.connector.cursor)
-#cur.execute('select * from mailback_resume')
-sql_parameter = 'Valeria',1,'10.20.30.18','Kevin'
-cur.callproc("add_resume", sql_parameter)
-#for row in cur.fetchall():
-#    print(row[1])
-cnx.commit()
-cnx.close()
+#cnx = mysql.connector.connect(user='backmail_admin', password='bkAdmin*5',
+#                              host='10.20.30.126',
+#                              database='mail_backup_server')
+# #assert isinstance(cnx, mysql.Connection)
+# cur = cnx.cursor()
+# #assert isinstance(cur, mysql.connector.cursor)
+# #cur.execute('select * from mailback_resume')
+# sql_parameter = 'Valeria',1,'10.20.30.18','Kevin'
+# cur.callproc("add_resume", sql_parameter)
+# #for row in cur.fetchall():
+# #    print(row[1])
+# cnx.commit()
+# cnx.close()
+
+def get_information_to_resume():
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    mailUser = config.get('MAIL', 'mailUser')
+    config.clear()
+    pc_name = socket.gethostname()
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(('google.com', 0))
+    pc_ip = s.getsockname()[0]
+    return mailUser, pc_name, pc_ip
+
+
+def dbserver_conexion():
+    lhost, ldbsuser, ldbspassword = dbservercnxdata()
+    return mysql.connector.connect(host=lhost, user=ldbsuser, password=ldbspassword,database='mail_backup_server' )
+
+def putresumein_server(newmails):
+    cnx = dbserver_conexion()
+
+    #assert isinstance(cnx, mysql.connector)
+    cur = cnx.cursor()
+    puser, pc_name, pc_ip = get_information_to_resume()
+
+    sql_parameter = puser, newmails, pc_ip, pc_name
+
+    cur.callproc("add_resume", sql_parameter)
+    cnx.commit()
+    cnx.close()
 
 
 def search_mailid_db(idmail):
@@ -55,7 +87,14 @@ def getdbcnxdata():
 
 def put_newmail_dblocal(mail_id, size, pfrom, pto, pcc, subject, pdate, pstrdate):
     cnx = dblocal_conexion()
-    sql_parameter = mail_id, size, pfrom, pto, pcc, subject, pdate, pstrdate
+    if pcc == None:
+        pcc = ''
+    if pfrom == None:
+        pfrom = ''
+    if pto == None:
+        pto = ''
+    print(mail_id)
+    sql_parameter = mail_id, size, pfrom[:699], pto[:699], pcc[:699], subject, pdate, pstrdate
     assert isinstance(cnx, fdb.Connection)
     cur = cnx.cursor()
     cur.callproc("ADD_MAIL", (sql_parameter))
