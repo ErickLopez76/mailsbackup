@@ -125,7 +125,7 @@ def getmail_save_eml(mailid):
     result, data = limap.uid('fetch',lmailid, 'RFC822')
     raw_mail = data[0][1]
     email_message = email.message_from_bytes(raw_mail)
-    f=open(str(int(mailid)) + ".eml", "w")
+    f=open("./mails/" + str(int(mailid)) + ".eml", "w")
     f.write(str(email_message))
     size = f.tell()
     f.close()

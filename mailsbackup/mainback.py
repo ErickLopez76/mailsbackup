@@ -1,4 +1,4 @@
-__author__ = 'earch'
+__author__ = 'Erick'
 import mailsbackuptools
 import datetime
 
