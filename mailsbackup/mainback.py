@@ -33,4 +33,9 @@ if n > 0:
 print("Process finished")
 #Review all mails, check each mail, if don't exist in dblocal then download and save in dblocal, if exit then next
 #print(mailServer)
+<<<<<<< HEAD
+#Esta es la ultima lineai
+#otra lina final 1
+=======
 #Esta es la ultima linea
+>>>>>>> terminal_master
