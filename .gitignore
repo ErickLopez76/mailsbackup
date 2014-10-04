@@ -1,4 +1,5 @@
 venv
 *.pyc
 *.eml
-./mails
+*.swp
+mails
