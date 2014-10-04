@@ -8,6 +8,20 @@ import fdb  # firebird library
 import socket
 import ipaddress
 import os
+import datetime
+
+def getlastcheck():
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    lastdaycheck = config.get('Version_control','lastCheck')
+    return lastdaycheck
+
+def check_update():
+    lastcheck = getlastcheck()
+    i = datetime.datetime.now()
+    si = i.strftime('%Y/%m/%d')
+    if lastcheck != si:
+        #execute search new version on server
 
 def dbservercnxdata():
     config = configparser.ConfigParser()

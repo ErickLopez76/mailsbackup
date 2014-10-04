@@ -4,6 +4,9 @@ import datetime
 
 maillist = []
 m = []
+
+# check last update
+
 # from mailsBackupTools import *
 mailServer, mailUser, mailPassword = mailsbackuptools.getmaildata()
 #print(mailsbackuptools.sumar(2,2))
