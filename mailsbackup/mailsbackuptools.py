@@ -9,20 +9,25 @@ import socket
 import ipaddress
 import os
 import datetime
+import versioncontrol
 
 def getlastcheck():
     config = configparser.ConfigParser()
     config.read('config.ini')
     lastdaycheck = config.get('Version_control','lastCheck')
-    return lastdaycheck
+    localv = config.get('Version_control', 'version')
+    return lastdaycheck, localv
 
 def check_update():
-    lastcheck = getlastcheck()
+    lastcheck, localversion = getlastcheck()
     i = datetime.datetime.now()
     si = i.strftime('%Y/%m/%d')
     print(si)
     if lastcheck != si:
         print("se necesita revisar el servidor de actualizaciones")
+        serverversion = versioncontrol.get_version_server()
+        if serverversion != localversion:
+            print('tiene una version antigua')
         #execute search new version on server
 
 def server_db_is_enable():
