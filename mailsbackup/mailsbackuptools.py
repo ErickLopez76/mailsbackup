@@ -22,14 +22,16 @@ def check_update():
     lastcheck, localversion = getlastcheck()
     i = datetime.datetime.now()
     si = i.strftime('%Y/%m/%d')
+    returndata = 0
     print(si)
     if lastcheck != si:
         print("se necesita revisar el servidor de actualizaciones")
         serverversion = versioncontrol.get_version_server()
         if serverversion != localversion:
             print('tiene una version antigua')
+            returndata = 1
         #execute search new version on server
-
+    return returndata
 def server_db_is_enable():
     config = configparser.ConfigParser()
     config.read('config.ini')

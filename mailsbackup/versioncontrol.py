@@ -25,16 +25,28 @@ def get_version_server():
     vdata = float(open('temp.txt','r').read())
     return vdata
 
-## This function get the list files of server
-def get_new_version():
 
-def get_file(filename)
+def get_ftpread_conn_param():
     config = configparser.ConfigParser()
     config.read('config.ini')
     server = config.get('Version_control','server')
     user = config.get('Version_control', 'readuser')
     passwd = config.get('Version_control', 'readpass')
+    return server,user,passwd
 
+## This function get the list files of server
+def get_new_version():
+    server, user, passwd = get_ftpread_conn_param()
+    ftp = FTP(server,user,passwd)
+    #get list of file in server
+    lfiles = ftp.nlst()
+
+    for lf in lfines:
+        get_file()
+
+    
+def get_file(filename):
+    server, user, passwd = get_ftpread_conn_param()
     ftp = FTP(server,user,passwd)
     
     ftp.retrbinary('RETR ' + filename, open(filename,'wb').write)

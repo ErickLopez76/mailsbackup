@@ -6,7 +6,8 @@ maillist = []
 m = []
 
 # check last update
-mailsbackuptools.check_update()
+if mailsbackuptools.check_update() > 0:
+    exit()
 
 # from mailsBackupTools import *
 mailServer, mailUser, mailPassword = mailsbackuptools.getmaildata()
