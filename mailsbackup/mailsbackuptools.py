@@ -6,17 +6,20 @@ import mysql
 import mysql.connector
 import fdb  # firebird library
 import socket
-import ipaddress
+# import ipaddress
 import os
 import datetime
 import versioncontrol
+# import confdata
+
 
 def getlastcheck():
     config = configparser.ConfigParser()
     config.read('config.ini')
-    lastdaycheck = config.get('Version_control','lastCheck')
+    lastdaycheck = config.get('Version_control', 'lastCheck')
     localv = config.get('Version_control', 'version')
     return lastdaycheck, localv
+
 
 def check_update():
     lastcheck, localversion = getlastcheck()
@@ -27,10 +30,14 @@ def check_update():
     if lastcheck != si:
         print("se necesita revisar el servidor de actualizaciones")
         serverversion = versioncontrol.get_version_server()
-        if serverversion != localversion:
+        if serverversion == 0:
+            # Can't connect with server
+            returndata = 0
+        if serverversion != localversion and serverversion !=0: #si la version es local es diferente del server
             print('tiene una version antigua')
             returndata = 1
-        #execute search new version on server
+            #execute search new version on server
+            versioncontrol.get_new_version()
     return returndata
 def server_db_is_enable():
     config = configparser.ConfigParser()
@@ -45,7 +52,7 @@ def dbservercnxdata():
     dbpassword = config.get('DB_server', 'dbsPassword')
     return host, dbuser, dbpassword
 
-#cnx = mysql.connector.connect(user='backmail_admin', password='bkAdmin*5',
+# cnx = mysql.connector.connect(user='backmail_admin', password='bkAdmin*5',
 #                              host='10.20.30.126',
 #                              database='mail_backup_server')
 # #assert isinstance(cnx, mysql.Connection)
@@ -140,10 +147,15 @@ Search information in ini file
     """
     config = configparser.ConfigParser()
     config.read('config.ini')
-    mailserver = config.get('MAIL', 'mailServer')
-    mailuser = config.get('MAIL', 'mailUser')
-    mailpassword = config.get('MAIL', 'mailPassword')
+    # mailserver = config.get('MAIL', 'mailServer')
+    # mailuser = config.get('MAIL', 'mailUser')
+    # mailpassword = config.get('MAIL', 'mailPassword')
     # config.sections()
+
+    mailserver = confdata.mailsbackup_crypt.get_server()
+    mailuser = confdata.mailsbackup_crypt.get_user()
+    mailpassword = confdata.mailsbackup_crypt.get_passwd()
+
     return mailserver, mailuser, mailpassword
 
 

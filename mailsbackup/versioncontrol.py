@@ -16,13 +16,15 @@ def get_version_server():
     server = config.get('Version_control','server')
     user = config.get('Version_control', 'readuser')
     passwd = config.get('Version_control', 'readpass')
-    
+
     #connect to server for every file
-    ftp = FTP(server,user,passwd)
-    ftp.retrbinary('RETR version.txt', open('temp.txt','wb').write)
-    ftp.quit()
-    
-    vdata = float(open('temp.txt','r').read())
+    try:
+        ftp = FTP(server,user,passwd)
+        ftp.retrbinary('RETR version.txt', open('temp.txt','wb').write)
+        ftp.quit()
+        vdata = float(open('temp.txt','r').read())
+    except:
+        vdata = 0
     return vdata
 
 
@@ -40,15 +42,16 @@ def get_new_version():
     ftp = FTP(server,user,passwd)
     #get list of file in server
     lfiles = ftp.nlst()
+    print(lfiles)
+    for lf in lfiles:
+        print("to import" + lf)
+        get_file(lf)
 
-    for lf in lfines:
-        get_file()
 
-    
 def get_file(filename):
     server, user, passwd = get_ftpread_conn_param()
     ftp = FTP(server,user,passwd)
-    
+
     ftp.retrbinary('RETR ' + filename, open(filename,'wb').write)
     #get list of fils in server
     #connect to server to get every file
@@ -61,7 +64,7 @@ def excludefiles(listfiles,excludeString):
     excludeList = excludeString.split(";")
     #for f in listfiles:
     #    if get_ext(f) in excludeList poero si :
-        
+
 
 def send_file(filename):
     config = configparser.ConfigParser()
@@ -71,25 +74,27 @@ def send_file(filename):
     passwd = config.get('Version_control','pass')
     #connect to server for every file
     ftp = FTP(server,user,passwd)
-
+    print(user)
     #save every file to server
     file = open(filename,'rb')
     print(filename)
     ftp.storbinary('STOR ' +  filename, file)
     file.close()
+    #ftp.quit()
+    ftp.voidcmd("SITE CHMOD 640 " + filename)
+    #ftp = FTP(server,user,passwd)
     ftp.quit()
 
-
-def put_new_Version():
+def put_new_version():
     config = configparser.ConfigParser()
     config.read('config.ini')
     exclude = config.get('Version_control','excludeext')
-    
+
     excludeList = exclude.split(";")
 
     # get list files in local
     onlyfiles = [f for f in listdir('./') if isfile(join('./',f))]
-    
+
     # exclude files
 
     for fi in onlyfiles:
