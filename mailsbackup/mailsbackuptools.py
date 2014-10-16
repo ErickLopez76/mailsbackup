@@ -6,11 +6,11 @@ import mysql
 import mysql.connector
 import fdb  # firebird library
 import socket
-# import ipaddress
+import ipaddress
 import os
 import datetime
 import versioncontrol
-# import confdata
+import confdata
 
 
 def getlastcheck():
@@ -19,6 +19,22 @@ def getlastcheck():
     lastdaycheck = config.get('Version_control', 'lastCheck')
     localv = config.get('Version_control', 'version')
     return lastdaycheck, localv
+
+
+def update_configfile_version(new_version):
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    config.set("Version_control", 'version', new_version)
+    with open('config.ini', 'w') as configfile:
+        config.write(configfile)
+
+
+def update_configfile_lastcheck(slastcheck):
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    config.set("Version_control", 'lastCheck', slastcheck)
+    with open('config.ini', 'w') as configfile:
+        config.write(configfile)
 
 
 def check_update():
@@ -37,8 +53,14 @@ def check_update():
             print('tiene una version antigua')
             returndata = 1
             #execute search new version on server
-            versioncontrol.get_new_version()
+            try:
+                versioncontrol.get_new_version()
+                update_configfile_version(str(serverversion))
+            except:
+                print("No se pudo actualizar la version")
+        update_configfile_lastcheck(si)
     return returndata
+
 def server_db_is_enable():
     config = configparser.ConfigParser()
     config.read('config.ini')
@@ -110,7 +132,8 @@ def search_mailid_db(idmail):
 
 def dblocal_conexion():
     lfiledb, ldbuser, ldbpassword = getdbcnxdata()
-    return fdb.connect(dsn=lfiledb, user=ldbuser, password=ldbpassword)
+    return_cnn = fdb.connect(dsn=lfiledb, user=ldbuser, password=ldbpassword)
+    return return_cnn
 
 
 def getdbcnxdata():
@@ -163,7 +186,7 @@ def getmail_save_eml(mailid):
     lmailid = bytes(mailid)
     limap = getimap()
     limap.select()
-    result, data = limap.uid('fetch',lmailid, 'RFC822')
+    result, data = limap.uid('fetch', lmailid, 'RFC822')
     raw_mail = data[0][1]
     email_message = email.message_from_bytes(raw_mail)
 

@@ -8,12 +8,12 @@ import os
 
 # rewrite this funcion using ftp
 def get_version_server():
-    #r = requests.get('https://raw.github.com/ErickLopez76/mailsbackup/release/mailsbackup/version.txt')
-    #server_version=float(r.text)
-    #return server_version
+    # r = requests.get('https://raw.github.com/ErickLopez76/mailsbackup/release/mailsbackup/version.txt')
+    # server_version=float(r.text)
+    # return server_version
     config = configparser.ConfigParser()
     config.read('config.ini')
-    server = config.get('Version_control','server')
+    server = config.get('Version_control', 'server')
     user = config.get('Version_control', 'readuser')
     passwd = config.get('Version_control', 'readpass')
 
