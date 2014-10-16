@@ -23,13 +23,14 @@ except:
     exit()
 
 for idmail in maillist:
-    if not mailsbackuptools.search_mailid_db(int(idmail)):  #Not found mail
+    # Search in local database
+    if not mailsbackuptools.search_mailid_account_db(int(idmail), mailUser):
         # Save mail in eml file
         vfrom, vto, vcc, vsubject, vstrdate, vsize = mailsbackuptools.getmail_save_eml(idmail)
 
         # Save in db_local register
         try:
-            mailsbackuptools.put_newmail_dblocal(int(idmail),vsize, vfrom, vto , vcc , vsubject ,datetime.datetime.now(),vstrdate)
+            mailsbackuptools.put_newmail_dblocal(int(idmail),vsize, vfrom, vto , vcc , vsubject ,datetime.datetime.now(),vstrdate, mailUser)
             n = n + 1
         except:
             print("No se puede conectar a dblocal")
@@ -37,7 +38,14 @@ for idmail in maillist:
         # Save resume in Server
 if mailsbackuptools.server_db_is_enable == 1:
     print('Start send resume to sever')
-    if n > 0:
+
+    if mailsbackuptools.send_always_report() == 1:
+        try:
+            mailsbackuptools.putresumein_server(n)
+        except:
+            print("No Database Server")
+
+    if n > 0 and mailsbackuptools.send_always_report != 1:
         try:
             mailsbackuptools.putresumein_server(n)
         except:

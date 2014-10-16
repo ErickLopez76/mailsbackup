@@ -2,4 +2,5 @@ venv
 *.pyc
 *.eml
 *.swp
+*.zip
 mails

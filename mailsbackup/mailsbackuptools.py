@@ -61,6 +61,11 @@ def check_update():
         update_configfile_lastcheck(si)
     return returndata
 
+def send_always_report():
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    return config.get('DB_server','always_report')
+
 def server_db_is_enable():
     config = configparser.ConfigParser()
     config.read('config.ini')
@@ -130,6 +135,17 @@ def search_mailid_db(idmail):
     return return_data
 
 
+def search_mailid_account_db(idmail, account):
+    return_data = False
+    cnx = dblocal_conexion()
+    assert isinstance(cnx, fdb.Connection)
+    cur = cnx.cursor()
+    cur.callproc("search_mail_by_id_account", (int(idmail),str(account)))
+    # Buscar id en la db
+    if cur.fetchone()[0] == 'T':
+        return_data = True
+    return return_data
+
 def dblocal_conexion():
     lfiledb, ldbuser, ldbpassword = getdbcnxdata()
     return_cnn = fdb.connect(dsn=lfiledb, user=ldbuser, password=ldbpassword)
@@ -144,7 +160,7 @@ def getdbcnxdata():
     dbpassword = config.get('DB_local', 'dbPassword')
     return filedb, dbuser, dbpassword
 
-def put_newmail_dblocal(mail_id, size, pfrom, pto, pcc, subject, pdate, pstrdate):
+def put_newmail_dblocal(mail_id, size, pfrom, pto, pcc, subject, pdate, pstrdate, paccount):
     cnx = dblocal_conexion()
     if pcc == None:
         pcc = ''
@@ -153,7 +169,7 @@ def put_newmail_dblocal(mail_id, size, pfrom, pto, pcc, subject, pdate, pstrdate
     if pto == None:
         pto = ''
     print(mail_id)
-    sql_parameter = mail_id, size, pfrom[:699], pto[:699], pcc[:699], subject, pdate, pstrdate
+    sql_parameter = mail_id, size, pfrom[:699], pto[:699], pcc[:699], subject, pdate, pstrdate, paccount
     assert isinstance(cnx, fdb.Connection)
     cur = cnx.cursor()
     cur.callproc("ADD_MAIL", (sql_parameter))
